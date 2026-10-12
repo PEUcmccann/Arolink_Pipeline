@@ -1,0 +1,727 @@
+{
+  "etag": "300009cb-0000-1100-0000-6a9fec070000",
+  "id": "/subscriptions/5655d321-85a1-4406-80c8-a3cc77de6f05/resourceGroups/ETL/providers/Microsoft.DataFactory/factories/Core-Factory/pipelines/Arolink_production_yield",
+  "name": "Arolink_production_yield",
+  "properties": {
+    "activities": [
+      {
+        "dependsOn": [
+          {
+            "activity": "Redruth_data",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "Ruskington_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "Ruskington_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "Ruskington_Arolink_production_yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Ruskington"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_Ruskington"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Bromborough_data",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "Corsham_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "Corsham_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "Corsham_Arolink_Production_Yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Corsham"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_Corsham"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Corsham_data",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "KingsLynn_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "KingsLynn_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "KingsLynn_Arolink_production_yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Kings Lynn"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_KingsLynn"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Linton_data",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "Redruth_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "Redruth_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "Redruth_Arolink_production_yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Redruth"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_Redruth"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "starttime_From",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "endtime_To",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "Bodmin_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "Bodmin_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "Bodmin_Arolink_production_yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Bodmin"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_Bodmin"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "KingsLynn_data",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "Linton_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "Linton_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "Linton_Arolink_production_yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Linton"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_Linton"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Bodmin_data",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "inputs": [
+          {
+            "parameters": {},
+            "referenceName": "Bromborough_Arolink",
+            "type": "DatasetReference"
+          }
+        ],
+        "name": "Bromborough_data",
+        "outputs": [
+          {
+            "parameters": {},
+            "referenceName": "Bromborough_Arolink_production_yield_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "policy": {
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Copy",
+        "typeProperties": {
+          "enableStaging": false,
+          "sink": {
+            "formatSettings": {
+              "fileExtension": ".txt",
+              "quoteAllText": true,
+              "type": "DelimitedTextWriteSettings"
+            },
+            "storeSettings": {
+              "copyBehavior": "MergeFiles",
+              "type": "AzureBlobStorageWriteSettings"
+            },
+            "type": "DelimitedTextSink"
+          },
+          "source": {
+            "additionalColumns": [
+              {
+                "name": "Site",
+                "value": "Bromborough"
+              },
+              {
+                "name": "LoadedDate_Timestamp",
+                "value": {
+                  "type": "Expression",
+                  "value": "@utcNow()"
+                }
+              },
+              {
+                "name": "FileName",
+                "value": "11_DAY_DAILY_YIELD_CSV_Arolink_Bromborough"
+              }
+            ],
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "enablePartitionDiscovery": false,
+              "modifiedDatetimeEnd": {
+                "type": "Expression",
+                "value": "@variables('endtime_To')"
+              },
+              "modifiedDatetimeStart": {
+                "type": "Expression",
+                "value": "@variables('starttime_From')"
+              },
+              "recursive": true,
+              "type": "FileServerReadSettings",
+              "wildcardFileName": "11_DAY_DAILY_YIELD_CSV*"
+            },
+            "type": "DelimitedTextSource"
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [],
+        "name": "starttime_From",
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "type": "SetVariable",
+        "typeProperties": {
+          "value": {
+            "type": "Expression",
+            "value": "@convertToUtc(addToTime(formatDateTime(utcNow(),'yyyy-MM-dd 01:00:00'),0,'Day'),'GMT Standard Time')"
+          },
+          "variableName": "starttime_From"
+        },
+        "userProperties": []
+      },
+      {
+        "dependsOn": [],
+        "name": "endtime_To",
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "type": "SetVariable",
+        "typeProperties": {
+          "value": {
+            "type": "Expression",
+            "value": "@convertToUtc(addToTime(formatDateTime(utcNow(),'yyyy-MM-dd 23:59:59'),0,'Day'),'GMT Standard Time')"
+          },
+          "variableName": "endtime_To"
+        },
+        "userProperties": []
+      }
+    ],
+    "annotations": [],
+    "folder": {
+      "name": "Arolink"
+    },
+    "lastPublishTime": "2026-09-08T11:05:43Z",
+    "policy": {
+      "elapsedTimeMetric": {}
+    },
+    "variables": {
+      "LastModified": {
+        "type": "String"
+      },
+      "endtime_To": {
+        "type": "String"
+      },
+      "starttime_From": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="snowflake-source" content="cortex-agent-authored" />
+  <title>Azure CLI Installation Guide — Pilgrim's Europe</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-10-12",
+    "intent": "Azure CLI installation and configuration guide for Pilgrim's Europe team, including MFA requirements for write operations",
+    "sections": [
+      { "id": "prerequisites", "title": "Prerequisites", "producerNotes": "Based on observed environment: Windows, Python 3.13 via pip install" },
+      { "id": "install", "title": "Installation", "producerNotes": "Two methods: winget or pip. Pip was the actual method used." },
+      { "id": "path-fix", "title": "Fix PATH", "producerNotes": "Real issue encountered: Roaming vs Local Python Scripts folder" },
+      { "id": "login", "title": "Login & MFA", "producerNotes": "Tenant 24d3c3a1 enforces MFA for Azure resource writes. Standard az login passes reads but fails writes." },
+      { "id": "extensions", "title": "Install Extensions", "producerNotes": "datafactory extension required for ADF CLI commands" },
+      { "id": "verify", "title": "Verify Setup", "producerNotes": "Commands tested against Core-Factory in ETL resource group" },
+      { "id": "troubleshooting", "title": "Troubleshooting", "producerNotes": "All issues from real session: PATH, MFA, Git Bash output capture, cmd.exe escaping" }
+    ]
+  }
+  </script>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: -apple-system, system-ui, 'Segoe UI', sans-serif;
+      max-width: 880px; width: 100%; box-sizing: border-box;
+      margin: 0 auto; padding: clamp(16px, 4vw, 24px);
+      color: light-dark(#1f2937, #e5e7eb);
+      line-height: 1.6;
+    }
+    h1 { color: light-dark(#0f172a, #f1f5f9); margin-bottom: 4px; font-size: 1.8em; }
+    h2 { color: light-dark(#0f172a, #f1f5f9); margin-top: 2em; border-bottom: 2px solid light-dark(#e5e7eb, #374151); padding-bottom: 6px; }
+    h3 { color: light-dark(#1e293b, #cbd5e1); margin-top: 1.4em; }
+    .subtitle { color: light-dark(#6b7280, #9ca3af); margin-top: 0; font-size: 0.95em; }
+    a { color: light-dark(#2563eb, #60a5fa); }
+    img, svg { max-width: 100%; height: auto; }
+
+    pre, code {
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.88em;
+    }
+    code {
+      background: light-dark(#f3f4f6, #1e293b);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      background: light-dark(#1e293b, #0f172a);
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+    .comment { color: #64748b; }
+    .cmd { color: #7dd3fc; }
+    .flag { color: #a5b4fc; }
+    .string { color: #86efac; }
+
+    .step-grid {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0 16px;
+      margin: 20px 0;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      background: light-dark(#2563eb, #3b82f6);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1em;
+    }
+    .step-content { padding-top: 6px; }
+
+    .alert {
+      border-left: 4px solid;
+      padding: 12px 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .alert-warn {
+      border-color: light-dark(#f59e0b, #fbbf24);
+      background: light-dark(#fffbeb, #1c1508);
+    }
+    .alert-info {
+      border-color: light-dark(#3b82f6, #60a5fa);
+      background: light-dark(#eff6ff, #0c1524);
+    }
+    .alert-danger {
+      border-color: light-dark(#ef4444, #f87171);
+      background: light-dark(#fef2f2, #1c0808);
+    }
+    .alert-success {
+      border-color: light-dark(#22c55e, #4ade80);
+      background: light-dark(#f0fdf4, #052e16);
+    }
+    .alert-title { font-weight: 700; margin-bottom: 4px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid light-dark(#d1d5db, #374151); padding: 8px 12px; text-align: left; }
+    th { background: light-dark(#f3f4f6, #1f2937); font-weight: 600; }
+
+    .toc { background: light-dark(#f8fafc, #111827); padding: 16px 24px; border-radius: 8px; margin: 20px 0; }
+    .toc ul { margin: 0; padding-left: 20px; }
+    .toc li { margin: 4px 0; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    .copy-hint { font-size: 0.8em; color: light-dark(#9ca3af, #6b7280); margin-top: -8px; }
+
+    @media (max-width: 600px) {
+      .step-grid { grid-template-columns: 36px 1fr; gap: 0 10px; }
+      .step-num { width: 32px; height: 32px; font-size: 0.95em; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Azure CLI Installation Guide</h1>
+  <p class="subtitle">Pilgrim's Europe — Data & Analytics Team<br>Last updated: 12 October 2026</p>
+
+  <div class="toc">
+    <strong>Contents</strong>
+    <ul>
+      <li><a href="#prerequisites">1. Prerequisites</a></li>
+      <li><a href="#install">2. Installation</a></li>
+      <li><a href="#path-fix">3. Fix PATH (pip installs only)</a></li>
+      <li><a href="#login">4. Login & MFA for Write Operations</a></li>
+      <li><a href="#extensions">5. Install Extensions</a></li>
+      <li><a href="#verify">6. Verify Setup</a></li>
+      <li><a href="#troubleshooting">7. Troubleshooting</a></li>
+      <li><a href="#quick-ref">8. Quick Reference</a></li>
+    </ul>
+  </div>
+
+  <!-- ===== 1. PREREQUISITES ===== -->
+  <h2 id="prerequisites">1. Prerequisites</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Requirement</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Operating System</td><td>Windows 10/11</td></tr>
+        <tr><td>Python (pip method only)</td><td>Python 3.10+ installed and on PATH</td></tr>
+        <tr><td>Admin rights</td><td>Not required for pip install; required for MSI/winget</td></tr>
+        <tr><td>Azure account</td><td>Your <code>@pilgrimsfoodgroup.onmicrosoft.com</code> or <code>@pilgrimseurope.com</code> account</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 2. INSTALLATION ===== -->
+  <h2 id="install">2. Installation</h2>
+  <p>Choose one method. If you already have Python, <strong>Option B (pip)</strong> is recommended — it doesn't require admin rights.</p>
+
+  <h3>Option A — winget (requires admin)</h3>
+  <p>Open PowerShell <strong>as Administrator</strong> and run:</p>
+  <pre><code><span class="cmd">winget</span> <span class="flag">install</span> Microsoft.AzureCLI</code></pre>
+
+  <h3>Option B — pip (no admin required)</h3>
+  <pre><code><span class="cmd">pip</span> <span class="flag">install</span> azure-cli</code></pre>
+
+  <div class="alert alert-warn">
+    <div class="alert-title">Important: pip installs to the Roaming folder</div>
+    <p style="margin:4px 0 0">When installed via pip, the <code>az</code> command is placed in:<br>
+    <code>C:\Users\&lt;you&gt;\AppData\Roaming\Python\Python3xx\Scripts\</code><br>
+    This folder is typically <strong>not</strong> on your PATH. See Section 3 to fix this.</p>
+  </div>
+
+  <h3>Option C — MSI installer</h3>
+  <p>Download the installer from <code>https://aka.ms/installazurecliwindows</code> and run it. This adds <code>az</code> to PATH automatically.</p>
+
+  <!-- ===== 3. PATH FIX ===== -->
+  <h2 id="path-fix">3. Fix PATH (pip installs only)</h2>
+
+  <div class="alert alert-info">
+    <div class="alert-title">Why this is needed</div>
+    <p style="margin:4px 0 0">Python's pip installs user packages to the <strong>Roaming</strong> AppData folder (<code>%APPDATA%\Python\...</code>), but only the <strong>Local</strong> AppData scripts folder (<code>%LOCALAPPDATA%\Python\...</code>) is typically on PATH. So <code>az</code> is installed but not found by your terminal.</p>
+  </div>
+
+  <h3>Check if az is reachable</h3>
+  <pre><code><span class="cmd">where.exe</span> az</code></pre>
+  <p>If it says <em>"Could not find files"</em>, fix the PATH:</p>
+
+  <h3>Add the Roaming scripts folder to your user PATH</h3>
+  <p>Run in PowerShell (no admin required):</p>
+  <pre><code><span class="comment"># Adjust the Python version if yours differs (e.g. Python312)</span>
+<span class="cmd">$roamingScripts</span> = <span class="string">"$env:APPDATA\Python\Python313\Scripts"</span>
+<span class="cmd">$currentPath</span> = [Environment]::GetEnvironmentVariable(<span class="string">"Path"</span>, <span class="string">"User"</span>)
+
+<span class="cmd">if</span> ($currentPath <span class="flag">-notlike</span> <span class="string">"*$roamingScripts*"</span>) {
+    [Environment]::SetEnvironmentVariable(<span class="string">"Path"</span>, <span class="string">"$currentPath;$roamingScripts"</span>, <span class="string">"User"</span>)
+    Write-Host <span class="string">"Added to PATH. Restart your terminal."</span>
+} <span class="cmd">else</span> {
+    Write-Host <span class="string">"Already in PATH."</span>
+}</code></pre>
+
+  <div class="alert alert-warn">
+    <div class="alert-title">Restart your terminal</div>
+    <p style="margin:4px 0 0">PATH changes only take effect in <strong>new</strong> terminal sessions. Close and reopen PowerShell/CMD after running the above.</p>
+  </div>
+
+  <!-- ===== 4. LOGIN & MFA ===== -->
+  <h2 id="login">4. Login & MFA for Write Operations</h2>
+
+  <div class="alert alert-danger">
+    <div class="alert-title">Critical: Our Azure tenant requires MFA for resource management</div>
+    <p style="margin:4px 0 0">A standard <code>az login</code> may authenticate you for <strong>read</strong> operations (listing resources, querying pipeline runs) but <strong>fail on writes</strong> (creating/updating pipelines, triggers, etc.) with this error:</p>
+    <pre style="margin:8px 0 0; font-size:0.85em"><code>ERROR: Unauthorized — RequestDisallowedByAzure
+"You are receiving this error because you tried to create, update
+or delete Azure resources without authenticating through MFA."</code></pre>
+  </div>
+
+  <h3>Standard login (sufficient for read-only work)</h3>
+  <pre><code><span class="cmd">az</span> <span class="flag">login</span></code></pre>
+  <p>Opens a browser for sign-in. Good enough for queries and monitoring.</p>
+
+  <h3>MFA-capable login (required for write operations)</h3>
+  <p>Use the device code flow, which forces a fresh interactive authentication that satisfies MFA:</p>
+  <pre><code><span class="comment"># First, clear any cached tokens</span>
+<span class="cmd">az</span> <span class="flag">logout</span>
+
+<span class="comment"># Then login with device code flow + explicit tenant</span>
+<span class="cmd">az</span> <span class="flag">login</span> <span class="flag">--tenant</span> <span class="string">24d3c3a1-4634-424a-a6d2-f30aace549d1</span> <span class="flag">--use-device-code</span></code></pre>
+
+  <div class="step-grid">
+    <div><div class="step-num">1</div></div>
+    <div class="step-content">The CLI will display a code and a URL. Open the URL in your browser.</div>
+
+    <div><div class="step-num">2</div></div>
+    <div class="step-content">Enter the code, sign in with your Pilgrim's Europe account, and complete the MFA challenge (Authenticator app, SMS, etc.).</div>
+
+    <div><div class="step-num">3</div></div>
+    <div class="step-content">Return to the terminal — you should see <em>"You have logged in"</em> and your subscription listed.</div>
+  </div>
+
+  <div class="alert alert-info">
+    <div class="alert-title">When to re-authenticate</div>
+    <p style="margin:4px 0 0">MFA tokens expire. If write operations start failing with the MFA error after a period of inactivity, repeat the logout → device-code login flow above.</p>
+  </div>
+
+  <!-- ===== 5. EXTENSIONS ===== -->
+  <h2 id="extensions">5. Install Extensions</h2>
+  <p>ADF commands require the <code>datafactory</code> extension:</p>
+  <pre><code><span class="cmd">az</span> <span class="flag">extension add</span> <span class="flag">--name</span> <span class="string">datafactory</span></code></pre>
+  <p>Verify installed extensions:</p>
+  <pre><code><span class="cmd">az</span> <span class="flag">extension list</span> <span class="flag">--output</span> table</code></pre>
+
+  <!-- ===== 6. VERIFY ===== -->
+  <h2 id="verify">6. Verify Setup</h2>
+
+  <h3>Check version</h3>
+  <pre><code><span class="cmd">az</span> <span class="flag">--version</span></code></pre>
+  <p>Expected: <code>azure-cli 2.91.0</code> or newer.</p>
+
+  <h3>Check active subscription</h3>
+  <pre><code><span class="cmd">az</span> <span class="flag">account show</span> <span class="flag">--output</span> table</code></pre>
+  <p>Should show: <em>Pilgrim's Shared Services Subscription 1</em></p>
+
+  <h3>List Data Factories (confirms ADF access)</h3>
+  <pre><code><span class="cmd">az</span> <span class="flag">resource list</span> <span class="flag">--resource-type</span> <span class="string">"Microsoft.DataFactory/factories"</span> <span class="flag">--output</span> table</code></pre>
+
+  <h3>Query a pipeline run (confirms read access)</h3>
+  <pre><code><span class="cmd">az</span> <span class="flag">rest</span> <span class="flag">--method</span> GET <span class="flag">--url</span> <span class="string">"https://management.azure.com/subscriptions/5655d321-85a1-4406-80c8-a3cc77de6f05/resourceGroups/ETL/providers/Microsoft.DataFactory/factories/Core-Factory/pipelines?api-version=2018-06-01"</span></code></pre>
+
+  <div class="alert alert-success">
+    <div class="alert-title">All working?</div>
+    <p style="margin:4px 0 0">If the above returns a JSON list of pipelines, your CLI is fully configured.</p>
+  </div>
+
+  <!-- ===== 7. TROUBLESHOOTING ===== -->
+  <h2 id="troubleshooting">7. Troubleshooting</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th style="min-width:200px">Problem</th><th>Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>az: command not found</code></td>
+          <td>The Roaming Python Scripts folder is not on PATH</td>
+          <td>See <a href="#path-fix">Section 3</a>. After fixing, restart your terminal.</td>
+        </tr>
+        <tr>
+          <td><code>RequestDisallowedByAzure</code> — MFA error on write operations</td>
+          <td>CLI session doesn't have an MFA-satisfied token</td>
+          <td>Run <code>az logout</code> then <code>az login --tenant 24d3c3a1-... --use-device-code</code>. See <a href="#login">Section 4</a>.</td>
+        </tr>
+        <tr>
+          <td><code>az</code> commands produce empty output in Git Bash</td>
+          <td>Git Bash doesn't always capture <code>az.bat</code> stdout correctly</td>
+          <td>Use PowerShell or CMD instead. Or run via Python: <code>subprocess.run(['az.bat', ...], shell=True)</code></td>
+        </tr>
+        <tr>
+          <td><code>'&&' is not a valid statement separator</code> in PowerShell</td>
+          <td>PowerShell uses <code>;</code> not <code>&&</code></td>
+          <td>Run commands separately, or use <code>;</code> to chain them.</td>
+        </tr>
+        <tr>
+          <td><code>The command line is too long</code> when passing JSON body</td>
+          <td>Windows command line length limit (~8191 chars)</td>
+          <td>Save JSON to a file and use <code>--body @filepath.json</code></td>
+        </tr>
+        <tr>
+          <td><code>%1 is not a valid Win32 application</code></td>
+          <td>Trying to execute <code>az</code> (the Python script) directly instead of <code>az.bat</code></td>
+          <td>Always use <code>az.bat</code> when calling from Python subprocess, or ensure the <code>.bat</code> extension is in PATHEXT.</td>
+        </tr>
+        <tr>
+          <td><code>Please run 'az login'</code></td>
+          <td>No active session / token expired</td>
+          <td>Run <code>az login</code> (reads) or the device-code flow (writes).</td>
+        </tr>
+        <tr>
+          <td><code>datafactory</code> commands not recognized</td>
+          <td>Extension not installed</td>
+          <td><code>az extension add --name datafactory</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 8. QUICK REFERENCE ===== -->
+  <h2 id="quick-ref">8. Quick Reference</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Subscription</td><td>Pilgrim's Shared Services Subscription 1</td></tr>
+        <tr><td>Subscription ID</td><td><code>5655d321-85a1-4406-80c8-a3cc77de6f05</code></td></tr>
+        <tr><td>Tenant ID</td><td><code>24d3c3a1-4634-424a-a6d2-f30aace549d1</code></td></tr>
+        <tr><td>Resource Group (ADF)</td><td><code>ETL</code></td></tr>
+        <tr><td>Data Factory</td><td><code>Core-Factory</code></td></tr>
+        <tr><td>Self-Hosted IR</td><td><code>PUK-Net1</code> (node: <code>UKGBDC01PBIG02I</code>)</td></tr>
+        <tr><td>ADF REST API base</td><td><code>https://management.azure.com/subscriptions/5655d321-.../resourceGroups/ETL/providers/Microsoft.DataFactory/factories/Core-Factory</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Common ADF CLI commands</h3>
+  <pre><code><span class="comment"># List all pipelines</span>
+<span class="cmd">az</span> <span class="flag">datafactory pipeline list</span> <span class="flag">--resource-group</span> ETL <span class="flag">--factory-name</span> Core-Factory <span class="flag">--output</span> table
+
+<span class="comment"># Show a specific pipeline run</span>
+<span class="cmd">az</span> <span class="flag">datafactory pipeline-run show</span> <span class="flag">--resource-group</span> ETL <span class="flag">--factory-name</span> Core-Factory <span class="flag">--run-id</span> <span class="string">"&lt;run-id&gt;"</span>
+
+<span class="comment"># Query activity runs within a pipeline run</span>
+<span class="cmd">az</span> <span class="flag">datafactory activity-run query-by-pipeline-run</span> \
+  <span class="flag">--resource-group</span> ETL <span class="flag">--factory-name</span> Core-Factory \
+  <span class="flag">--run-id</span> <span class="string">"&lt;run-id&gt;"</span> \
+  <span class="flag">--last-updated-after</span> <span class="string">"2026-10-01T00:00:00Z"</span> \
+  <span class="flag">--last-updated-before</span> <span class="string">"2026-10-13T00:00:00Z"</span>
+
+<span class="comment"># Trigger a pipeline manually</span>
+<span class="cmd">az</span> <span class="flag">datafactory pipeline create-run</span> <span class="flag">--resource-group</span> ETL <span class="flag">--factory-name</span> Core-Factory <span class="flag">--name</span> <span class="string">"Arolink_production_yield"</span></code></pre>
+
+  <p style="margin-top:2em; color: light-dark(#9ca3af, #6b7280); font-size:0.85em;">
+    Generated by Cortex Code — 12 October 2026
+  </p>
+
+</body>
+</html>
